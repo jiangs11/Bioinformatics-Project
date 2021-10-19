@@ -5,9 +5,8 @@
 
 import os
 
-
-def main():
+def runGATEkeeper():
     return
 
 if __name__ == '__main__':
-    main()
+    runGATEkeeper()

@@ -7,13 +7,10 @@ import os
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-
 from Bio import SeqIO
 
 numUnique = 100
-
 data = {}
-
 
 def main():
     return

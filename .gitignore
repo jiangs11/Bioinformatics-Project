@@ -1,3 +1,4 @@
 sequences.fasta
+uniqueSequences.fasta
 venv/*
 .idea
