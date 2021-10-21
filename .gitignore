@@ -1,4 +1,5 @@
 sequences.fasta
-uniqueSequences.fasta
+allUniqueSequences.fasta
+top1000UniqueSequences.fasta
 venv/*
 .idea
