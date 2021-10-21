@@ -1,5 +1,6 @@
 sequences.fasta
 allUniqueSequences.fasta
 top1000UniqueSequences.fasta
+gatekeeperOutput/*
 venv/*
 .idea
