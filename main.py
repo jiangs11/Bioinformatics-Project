@@ -1,4 +1,4 @@
-# Names: Steven Jiang
+# Names: Steven Jiang, Jehu Ananoria, Jeff Wang
 # Assignment: Project
 # Date: 10/19/21
 # Class: Graduate Bioinformatics, Dr. Chen
@@ -11,18 +11,20 @@ from Bio import SeqIO
 
 '''
 Format  ChromosomeID: counter
-Example 1: 20,
+Example KEY: VALUE
+        1: 20,
         2: 30,
         3: 10
-Plot    Manhattan
+Plot    Manhattan (Using Scatter)
 Note    Should have 29,903 entries since that is the chromosome length of Genome 045512.2 
 '''
 mutationFrequencyData = {}
 
 '''
-Format  TYPE: counter
-Example SUBSTITUTE: 200,
-        INSERTION: 10,
+Format  SNP TYPE: counter
+Example KEY: VALUE
+        SUBSTITUTE: 200,
+        INSERT: 10,
         DELETION: 80
 Plot    Bar
 '''
@@ -30,7 +32,8 @@ snpTypeData = {}
 
 '''
 Format  SUB_CHANGE: counter 
-Example C->G: 5
+Example KEY: VALUE
+        C->G: 5
         C->A: 2
         A->T: 10
 Plot    Bar
@@ -38,6 +41,9 @@ Plot    Bar
 substitutionData = {}
 
 
+'''
+Sets up all the dictionaries with appropriate data 
+'''
 def processData(fileLines):
     for i in fileLines:
         if not i.startswith('#'):
@@ -45,8 +51,6 @@ def processData(fileLines):
             line = i.split('\t')
             chromosomeID = int(line[1])
             snpIndel = line[-1].split('TYPE=')[1]
-
-            # REMINDER ABOUT THE HISTOGRAM DATA GOES HERE
 
             mutationFrequencyData[chromosomeID] += 1
 
@@ -63,26 +67,46 @@ def processData(fileLines):
                 else:
                     substitutionData[key] = 1
 
-def manhattanPlotDataSetup():
+
+'''
+Initial setup of the dictionary keys
+'''
+def plotDataSetup():
+    # Manhattan Plot
     for i in range(1, 29904):
         mutationFrequencyData[i] = 0
 
+
+'''
+Plots a Manhattan Plot with Matplotlib Scatter
+X axis - Genome IDs from 1 to 29,903
+Y axis - Occurrences of ID in the mutation files (Min=0, Max=999 since there's only 999 files)
+'''
 def manhattanPlot():
     keys = mutationFrequencyData.keys()
     values = mutationFrequencyData.values()
-    # plt.bar(keys, values)
     plt.scatter(keys, values)
 
-    # for i, v in enumerate(values):
-    #     plt.text(i, v, str(v), horizontalalignment="center")
+    for i, v in enumerate(values):
+        # Show the Genome IDs of those that mutated over 900 times
+        if v > 900:
+            plt.annotate(list(keys)[i], (list(keys)[i] + 100, list(values)[i]))
 
     plt.xlabel('Genome ID')
     plt.ylabel('Occurrences')
     plt.title('Manhattan Plot')
+    plt.xticks([1, 29903])
+    plt.yticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999])
     plt.show()
-    return
+    plt.savefig('manhattanPlot.png')
 
-def barPlot():
+
+'''
+Plots a Bar Plot with Matplotlib Bar
+X axis - SNP Type (SUBSTITUTE, INSERT, DELETION)
+Y axis - Occurrences of the SNP type
+'''
+def snpTypeFrequencyPlot():
     keys = snpTypeData.keys()
     values = snpTypeData.values()
     plt.bar(keys, values)
@@ -94,8 +118,15 @@ def barPlot():
     plt.ylabel('Occurrences')
     plt.title('SNP Types Frequency')
     plt.show()
+    plt.savefig('snpTypeFrequencyPlot.png')
 
-def substitutionPlot():
+
+'''
+Plots a Bar Plot with Matplotlib Bar
+X axis - Substitution Combination (A->C, A->G, A->T, C->A, ...)
+Y axis - Occurrences of the substitution combination
+'''
+def substitutionFrequencyPlot():
     keys = substitutionData.keys()
     values = substitutionData.values()
     plt.bar(keys, values)
@@ -107,9 +138,24 @@ def substitutionPlot():
     plt.ylabel('Occurrences')
     plt.title('Substitution Type Change Frequency')
     plt.show()
+    plt.savefig('substitutionFrequencyPlot.png')
+
 
 def histogramPlot():
-    return
+    keys = mutationFrequencyData.values()
+    values = mutationFrequencyData.values()
+    arr = plt.hist(values, density=False, bins=10, edgecolor='black', linewidth=1.2)
+
+    for i in range(10):
+        plt.text(arr[1][i], arr[0][i], str(arr[0][i]))
+
+    plt.xlabel('Mutations Occurred')
+    plt.ylabel('Count')
+    plt.title('Histogram Plot')
+    plt.xticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999])
+    plt.show()
+    plt.savefig('histogramPlot.png')
+
 
 def main():
     for root, dirs, files in os.walk('gatekeeperOutput'):
@@ -124,12 +170,11 @@ def main():
 
                     processData(lines)
 
+
 if __name__ == '__main__':
+    plotDataSetup()
     main()
-    manhattanPlotDataSetup()
-    # manhattanPlot()
-    # barPlot()
-    # substitutionPlot()
-    # print(len(mutationFrequencyData))
-    # print(snpTypeData)
-    # print(substitutionData)
+    manhattanPlot()
+    snpTypeFrequencyPlot()
+    substitutionFrequencyPlot()
+    histogramPlot()
