@@ -97,8 +97,8 @@ def manhattanPlot():
     plt.title('Manhattan Plot')
     plt.xticks([1, 29903])
     plt.yticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999])
-    plt.show()
     plt.savefig('manhattanPlot.png')
+    plt.show()
 
 
 '''
@@ -117,8 +117,8 @@ def snpTypeFrequencyPlot():
     plt.xlabel('SNP Type')
     plt.ylabel('Occurrences')
     plt.title('SNP Types Frequency')
-    plt.show()
     plt.savefig('snpTypeFrequencyPlot.png')
+    plt.show()
 
 
 '''
@@ -137,12 +137,11 @@ def substitutionFrequencyPlot():
     plt.xlabel('Substitution Changes')
     plt.ylabel('Occurrences')
     plt.title('Substitution Type Change Frequency')
-    plt.show()
     plt.savefig('substitutionFrequencyPlot.png')
+    plt.show()
 
 
-def histogramPlot():
-    keys = mutationFrequencyData.values()
+def histogramPlot1():
     values = mutationFrequencyData.values()
     arr = plt.hist(values, density=False, bins=10, edgecolor='black', linewidth=1.2)
 
@@ -151,10 +150,34 @@ def histogramPlot():
 
     plt.xlabel('Mutations Occurred')
     plt.ylabel('Count')
-    plt.title('Histogram Plot')
+    plt.title('Histogram Plot with Large Bins')
     plt.xticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999])
+    plt.savefig('histogramPlot1.png')
     plt.show()
-    plt.savefig('histogramPlot.png')
+
+
+def histogramPlot2():
+    values = mutationFrequencyData.values()
+    values = [i for i in list(values) if 0 <= i <= 10]
+
+    count0 = [i for i in list(values) if i == 1]
+
+    print(len(values))
+    print(len(count0))
+
+    arr = plt.hist(values, density=False, bins=10, edgecolor='black', linewidth=1.2)
+
+    for i in range(10):
+        plt.text(arr[1][i], arr[0][i], str(arr[0][i]))
+
+    plt.xlabel('Mutations Occurred')
+    plt.ylabel('Count')
+    plt.title('Histogram Plot with Zeroes Removed')
+    plt.xticks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    # plt.xticks([1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+    # plt.xticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999])
+    plt.savefig('histogramPlot2.png')
+    plt.show()
 
 
 def main():
@@ -177,4 +200,5 @@ if __name__ == '__main__':
     manhattanPlot()
     snpTypeFrequencyPlot()
     substitutionFrequencyPlot()
-    histogramPlot()
+    histogramPlot1()
+    histogramPlot2()
