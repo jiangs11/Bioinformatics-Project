@@ -158,7 +158,7 @@ def histogramPlot1():
 
 def histogramPlot2():
     values = mutationFrequencyData.values()
-    values = [i for i in list(values) if 0 <= i <= 10]
+    values = [i for i in list(values) if 0 < i <= 10]
 
     count0 = [i for i in list(values) if i == 1]
 
@@ -197,8 +197,8 @@ def main():
 if __name__ == '__main__':
     plotDataSetup()
     main()
-    manhattanPlot()
-    snpTypeFrequencyPlot()
-    substitutionFrequencyPlot()
+    # manhattanPlot()
+    # snpTypeFrequencyPlot()
+    # substitutionFrequencyPlot()
     histogramPlot1()
     histogramPlot2()
