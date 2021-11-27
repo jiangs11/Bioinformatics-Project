@@ -58,6 +58,7 @@ def getNumMutations():
             # Ignore metadata stuff
             if not i.startswith('#'):
                 counter += 1
+
         return counter
 
 
