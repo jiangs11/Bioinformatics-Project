@@ -1,4 +1,4 @@
-# Names: Steven Jiang
+# Names: Steven Jiang, Jehu Ananoria, Jeff Wang
 # Assignment: Project
 # Date: 10/19/21
 # Class: Graduate Bioinformatics, Dr. Chen
@@ -6,24 +6,35 @@
 import os
 from Bio import SeqIO
 
-fileName = 'top1000UniqueSequences.fasta'
+fileName = 'selected1000UniqueSequences.fasta'
 tempFile1 = 'tempFile1.fasta'
 tempFile2 = 'tempFile2.fasta'
 outputFile = 'output'
 outputFolder = 'gatekeeperOutput'
 
-# Set up command to run GATEkeeper
+
 def runGATEkeeper(counter):
+    """
+    Sets up command and runs GATEkeeper.
+
+    :param counter: Unique identifier for the file name.
+    :return: None
+    """
     command = './GATEkeeper/bin/GATEkeeper -r ' + tempFile1 + ' -q ' + tempFile2 + ' -o ' + outputFile + str(counter).zfill(6)
     os.system(command)
 
-# Moves all output.maf and output.vcf files to subdirectory and deletes other GATEkeeper generated files
+
 def moveDeleteFiles():
+    """
+    Moves all output.maf and output.vcf files to subdirectory and deletes other GATEkeeper generated files.
+
+    :return: None
+    """
     os.system('mkdir ' + outputFolder)
     os.system('mv output*.* ' + outputFolder)
 
     os.system('rm tempFile*.*')
-    os.system('rm tempFile*.*')
+
 
 def main():
     counter = 0

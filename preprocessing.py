@@ -1,4 +1,4 @@
-# Names: Steven Jiang
+# Names: Steven Jiang, Jehu Ananoria, Jeff Wang
 # Assignment: Project
 # Date: 10/19/21
 # Class: Graduate Bioinformatics, Dr. Chen
@@ -12,10 +12,15 @@ numUnique = 1000
 
 rawInputFile = 'sequences.fasta'
 allUniqueOutputFile = 'allUniqueSequences.fasta'
-topNUniqueOutputFile = 'top' + str(numUnique) + 'UniqueSequences.fasta'
+topNUniqueOutputFile = 'selected' + str(numUnique) + 'UniqueSequences.fasta'
 
-# Takes raw fasta file and stores them into dictionary
+
 def readProcessData():
+    """
+    Takes raw fasta file and stores them into dictionary.
+
+    :return: Total number of sequences downloaded from NCBI.
+    """
     totalNumGenomesDownloaded = 0
 
     with open(rawInputFile) as handle:
@@ -34,8 +39,13 @@ def readProcessData():
 
     return totalNumGenomesDownloaded
 
-# Deletes all genome records that contain an 'N' in its sequence
+
 def processGenomes():
+    """
+    Deletes all genome records that contain an 'N' in its sequence.
+
+    :return: Dictionary containing only the unique sequences and without an 'N' in its sequence.
+    """
     dataWithoutN = data.copy()
 
     for i in list(dataWithoutN.keys()):
@@ -44,24 +54,53 @@ def processGenomes():
 
     return dataWithoutN
 
-# Writes all unique sequences to one file and the top N (1000 for this project) unique sequences to another file
+
+def getSizeOfFile(fileInput):
+    """
+    Counts the total number of sequences in a specified fasta file.
+
+    :param fileInput: Any fasta file.
+    :return: Total number of sequences in fileInput.
+    """
+    size = 0
+
+    with open(fileInput) as file:
+        records = SeqIO.parse(file, 'fasta')
+
+        for _ in records:
+            size += 1
+
+    return size
+
+
 def writeUniqueGenomesToFile(finalData):
-    with open(allUniqueOutputFile, 'a') as file:
+    """
+    Generates final fasta file containing 1000 sequences.
+
+    :param finalData: The dictionary containing all unique sequences.
+    :return: Total number of sequences that were written into output file.
+    """
+    with open(allUniqueOutputFile, 'w') as file:
         for i in finalData:
             file.write('>' + finalData[i]['description'][0] + '\n')
             file.write(i + '\n')
 
-    with open(topNUniqueOutputFile, 'a') as file:
+    with open(topNUniqueOutputFile, 'w') as file:
         counter = 0
+        num = 0
+        size = getSizeOfFile(allUniqueOutputFile)
+
+        step = size // numUnique
+
         for i in finalData:
-            file.write('>' + finalData[i]['description'][0] + '\n')
-            file.write(i + '\n')
+            if counter % step == 0 and num < numUnique:
+                file.write('>' + finalData[i]['description'][0] + '\n')
+                file.write(i + '\n')
+                num += 1
             counter += 1
 
-            if counter == numUnique:
-                break
+        return num
 
-        return counter
 
 def main():
     totalNumGenomesDownloaded = readProcessData()
@@ -71,6 +110,7 @@ def main():
     print('Total number of genomes downloaded:', totalNumGenomesDownloaded)
     print('Total number of unique genomes:', len(genomesWithoutN))
     print('Total N unique genomes:', topNWritten)
+
 
 if __name__ == '__main__':
     main()

@@ -5,9 +5,7 @@
 
 import os
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
-from Bio import SeqIO
 
 '''
 Format  ChromosomeID: counter
@@ -41,10 +39,13 @@ Plot    Bar
 substitutionData = {}
 
 
-'''
-Sets up all the dictionaries with appropriate data 
-'''
 def processData(fileLines):
+    """
+    Sets up all the dictionaries with appropriate data.
+
+    :param fileLines: Lines in a .vcf file.
+    :return: None
+    """
     for i in fileLines:
         if not i.startswith('#'):
             # Format example: ['NC_045512.2', '210', '.', 'G', 'T', '100', '*', 'TYPE=SUBSTITUTE']
@@ -68,21 +69,25 @@ def processData(fileLines):
                     substitutionData[key] = 1
 
 
-'''
-Initial setup of the dictionary keys
-'''
 def plotDataSetup():
+    """
+    Initial setup of the dictionary keys.
+
+    :return: None
+    """
     # Manhattan Plot
     for i in range(1, 29904):
         mutationFrequencyData[i] = 0
 
 
-'''
-Plots a Manhattan Plot with Matplotlib Scatter
-X axis - Genome IDs from 1 to 29,903
-Y axis - Occurrences of ID in the mutation files (Min=0, Max=999 since there's only 999 files)
-'''
 def manhattanPlot():
+    """
+    Plots a Manhattan Plot with Matplotlib Scatter.
+    X axis - Genome IDs from 1 to 29,903.
+    Y axis - Occurrences of ID in the mutation files (Min=0, Max=999 since there's only 999 files).
+
+    :return: None
+    """
     keys = mutationFrequencyData.keys()
     values = mutationFrequencyData.values()
     plt.scatter(keys, values)
@@ -101,12 +106,14 @@ def manhattanPlot():
     plt.show()
 
 
-'''
-Plots a Bar Plot with Matplotlib Bar
-X axis - SNP Type (SUBSTITUTE, INSERT, DELETION)
-Y axis - Occurrences of the SNP type
-'''
 def snpTypeFrequencyPlot():
+    """
+    Plots a Bar Plot with Matplotlib Bar.
+    X axis - SNP Type (SUBSTITUTE, INSERT, DELETION).
+    Y axis - Occurrences of the SNP type.
+
+    :return: None
+    """
     keys = snpTypeData.keys()
     values = snpTypeData.values()
     plt.bar(keys, values)
@@ -121,12 +128,14 @@ def snpTypeFrequencyPlot():
     plt.show()
 
 
-'''
-Plots a Bar Plot with Matplotlib Bar
-X axis - Substitution Combination (A->C, A->G, A->T, C->A, ...)
-Y axis - Occurrences of the substitution combination
-'''
 def substitutionFrequencyPlot():
+    """
+    Plots a Bar Plot with Matplotlib Bar.
+    X axis - Substitution Combination (A->C, A->G, A->T, C->A, ...).
+    Y axis - Occurrences of the substitution combination.
+
+    :return: None
+    """
     keys = substitutionData.keys()
     values = substitutionData.values()
     plt.bar(keys, values)
@@ -142,40 +151,55 @@ def substitutionFrequencyPlot():
 
 
 def histogramPlot1():
-    values = mutationFrequencyData.values()
-    arr = plt.hist(values, density=False, bins=10, edgecolor='black', linewidth=1.2)
+    """
+    Plots a Histogram Plot with Matplotlib Hist.
+    Each bin has a larger range (100).
+    X axis - Bins containing mutations occurred.
+    Y axis - Occurrences of the mutations occurred.
 
-    for i in range(10):
-        plt.text(arr[1][i], arr[0][i], str(arr[0][i]))
+    :return: None
+    """
+    values = mutationFrequencyData.values()
+    freq, bins, patches = plt.hist(values, density=False, bins=10, edgecolor='black')
+
+    bin_centers = np.diff(bins) * 0.5 + bins[:-1]
+
+    n = 0
+    for fr, x, patch in zip(freq, bin_centers, patches):
+        height = int(freq[n])
+        plt.annotate("{}".format(height), xy=(x, height), xytext=(0, 0.2), textcoords="offset points", ha='center', va='bottom')
+        n = n + 1
 
     plt.xlabel('Mutations Occurred')
     plt.ylabel('Count')
-    plt.title('Histogram Plot with Large Bins')
+    plt.title('Histogram Plot with Large Intervals')
     plt.xticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999])
     plt.savefig('histogramPlot1.png')
     plt.show()
 
 
 def histogramPlot2():
+    """
+    Plots a Histogram Plot with Matplotlib Bar.
+    Each bin has a smaller range (10).
+    X axis - Bins containing mutations occurred.
+    Y axis - Occurrences of the mutations occurred.
+
+    :return: None
+    """
     values = mutationFrequencyData.values()
     values = [i for i in list(values) if 0 < i <= 10]
+    labels, counts = np.unique(values, return_counts=True)
 
-    count0 = [i for i in list(values) if i == 1]
+    plt.bar(labels, counts)
 
-    print(len(values))
-    print(len(count0))
-
-    arr = plt.hist(values, density=False, bins=10, edgecolor='black', linewidth=1.2)
-
-    for i in range(10):
-        plt.text(arr[1][i], arr[0][i], str(arr[0][i]))
+    for i, v in enumerate(counts):
+        plt.text(i + 1, v + 0.5, str(v), horizontalalignment="center")
 
     plt.xlabel('Mutations Occurred')
     plt.ylabel('Count')
     plt.title('Histogram Plot with Zeroes Removed')
-    plt.xticks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    # plt.xticks([1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
-    # plt.xticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999])
+    plt.xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     plt.savefig('histogramPlot2.png')
     plt.show()
 
@@ -197,8 +221,8 @@ def main():
 if __name__ == '__main__':
     plotDataSetup()
     main()
-    # manhattanPlot()
-    # snpTypeFrequencyPlot()
-    # substitutionFrequencyPlot()
+    snpTypeFrequencyPlot()
+    substitutionFrequencyPlot()
+    manhattanPlot()
     histogramPlot1()
     histogramPlot2()
