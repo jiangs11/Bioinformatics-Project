@@ -97,7 +97,7 @@ def manhattanPlot():
         if v > 900:
             plt.annotate(list(keys)[i], (list(keys)[i] + 100, list(values)[i]))
 
-    plt.xlabel('Genome ID')
+    plt.xlabel('BP Position')
     plt.ylabel('Occurrences')
     plt.title('Manhattan Plot')
     plt.xticks([1, 29903])
