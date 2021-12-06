@@ -80,16 +80,19 @@ def plotDataSetup():
         mutationFrequencyData[i] = 0
 
 
-def manhattanPlot():
+def manhattanPlot(data, title, fileName):
     """
     Plots a Manhattan Plot with Matplotlib Scatter.
     X axis - Genome IDs from 1 to 29,903.
     Y axis - Occurrences of ID in the mutation files (Min=0, Max=999 since there's only 999 files).
 
+    :param data: Dictionary data to plot.
+    :param title: Title for the plot.
+    :param fileName: Name of the file to be saved.
     :return: None
     """
-    keys = mutationFrequencyData.keys()
-    values = mutationFrequencyData.values()
+    keys = data.keys()
+    values = data.values()
     plt.scatter(keys, values)
 
     for i, v in enumerate(values):
@@ -99,10 +102,10 @@ def manhattanPlot():
 
     plt.xlabel('BP Position')
     plt.ylabel('Occurrences')
-    plt.title('Manhattan Plot')
+    plt.title(title)
     plt.xticks([1, 29903])
     plt.yticks([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 999])
-    plt.savefig('manhattanPlot.png')
+    plt.savefig(fileName)
     plt.show()
 
 
@@ -204,6 +207,21 @@ def histogramPlot2():
     plt.show()
 
 
+def negativeBinomialManhattanPlot():
+    """
+    Deletes entries from mutation frequency dictionary if their values are below 30 mutations.
+
+    :return: New dictionary whose values are at least above 30 mutations.
+    """
+    newDict = mutationFrequencyData.copy()
+
+    for i in list(newDict.keys()):
+        if newDict[i] < 30:
+            del newDict[i]
+
+    return newDict
+
+
 def main():
     for root, dirs, files in os.walk('gatekeeperOutput'):
         for fileName in files:
@@ -223,6 +241,8 @@ if __name__ == '__main__':
     main()
     snpTypeFrequencyPlot()
     substitutionFrequencyPlot()
-    manhattanPlot()
+    manhattanPlot(mutationFrequencyData, 'Manhattan Plot', 'manhattanPlot1.png')
     histogramPlot1()
     histogramPlot2()
+    newMutationFrequencyData = negativeBinomialManhattanPlot()
+    manhattanPlot(newMutationFrequencyData, 'Manhattan Plot (>=30 mutations only)', 'manhattanPlot2.png')
